@@ -2,8 +2,8 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenixpro.controls.PositionVoltage;
-import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public interface ModuleIO 
 {
@@ -15,7 +15,6 @@ public interface ModuleIO
     public double magEncoderValue = 0.0;
     public double driveAppliedVolts = 0.0;
     public double steerAppliedVolts = 0.0;
-    public double driveMtrPercentOutput = 0.0;
  }
 
  /** Updates the set of loggable inputs. */
