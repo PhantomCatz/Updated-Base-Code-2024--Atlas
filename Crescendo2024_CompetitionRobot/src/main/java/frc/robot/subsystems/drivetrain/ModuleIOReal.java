@@ -1,15 +1,21 @@
 package frc.robot.subsystems.drivetrain;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.CatzConstants.DriveConstants;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -17,61 +23,86 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class ModuleIOReal implements ModuleIO {
 
     private final CANSparkMax STEER_MOTOR;
-    private final WPI_TalonFX DRIVE_MOTOR;
+    private final TalonFX DRIVE_MOTOR;
 
     private DutyCycleEncoder magEnc;
     private DigitalInput MagEncPWMInput;
 
-    //current limiting
-    private SupplyCurrentLimitConfiguration swerveModuleCurrentLimit;
+    private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
+
+            //create new config objects
+    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+    private Slot0Configs driveConfigs = new Slot0Configs();
 
 
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
+
+        //mag encoder setup
         MagEncPWMInput = new DigitalInput(magDIOPort);
         magEnc = new DutyCycleEncoder(MagEncPWMInput);
 
+        //steer motor setup
         STEER_MOTOR = new CANSparkMax(steerMotorIDIO, MotorType.kBrushless);
-        DRIVE_MOTOR = new WPI_TalonFX(driveMotorIDIO);
-
         STEER_MOTOR.restoreFactoryDefaults();
-        DRIVE_MOTOR.configFactoryDefault();
-
-        //Set current limit
-        swerveModuleCurrentLimit = new SupplyCurrentLimitConfiguration(DriveConstants.ENABLE_CURRENT_LIMIT, 
-                                                                       DriveConstants.CURRENT_LIMIT_AMPS, 
-                                                                       DriveConstants.CURRENT_LIMIT_TRIGGER_AMPS, 
-                                                                       DriveConstants.CURRENT_LIMIT_TIMEOUT_SECONDS);
-
         STEER_MOTOR.setSmartCurrentLimit(DriveConstants.STEER_CURRENT_LIMIT_AMPS);
-        DRIVE_MOTOR.configSupplyCurrentLimit(swerveModuleCurrentLimit);
-
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
-        DRIVE_MOTOR.setNeutralMode(NeutralMode.Brake);
 
-        DRIVE_MOTOR.config_kP(0, 0.1);
-        DRIVE_MOTOR.config_kI(0, 0.0);
-        DRIVE_MOTOR.config_kD(0, 0.0);
-        DRIVE_MOTOR.configClosedloopRamp(DriveConstants.NEUTRAL_TO_FULL_SECONDS);
+
+        //Drive Motor setup
+        DRIVE_MOTOR = new TalonFX(driveMotorIDIO);
+            //reset to factory defaults
+        DRIVE_MOTOR.getConfigurator().apply(new TalonFXConfiguration());
+        talonConfigs.Slot0 = driveConfigs;
+            //current limit
+        talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = DriveConstants.ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = DriveConstants.CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = DriveConstants.CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = DriveConstants.CURRENT_LIMIT_TIMEOUT_SECONDS;
+            //neutral mode
+        talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            //pid
+        driveConfigs.kP = 0.1;
+        driveConfigs.kI = 0.0;
+        driveConfigs.kD = 0.0;
+            //ramping
+        talonConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveConstants.NEUTRAL_TO_FULL_SECONDS;
+
+        //apply configs
+        DRIVE_MOTOR.getConfigurator().apply(talonConfigs, 0.050);
+
+        //check if drive motor is initialized correctly
+        for(int i=0;i<5;i++){
+            initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
+            if(initializationStatus.isOK())
+                break;
+            else if(!initializationStatus.isOK())
+                System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
+            
+        }
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity = DRIVE_MOTOR.getSelectedSensorVelocity();
-        inputs.driveMtrSensorPosition = DRIVE_MOTOR.getSelectedSensorPosition();
+        inputs.driveMtrVelocity = DRIVE_MOTOR.getRotorVelocity().getValue();
+        inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.magEncoderValue = magEnc.get();
-        inputs.driveMtrPercentOutput = DRIVE_MOTOR.getMotorOutputPercent();
     }
 
     @Override
     public void setDriveVelocityIO(double velocity) {
         //negative to align with Controler TBD?
-        DRIVE_MOTOR.set(ControlMode.Velocity, velocity * DriveConstants.VEL_FF);
+        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
     }
 
     @Override
     public void setDrivePwrPercentIO(double drivePwrPercent) {
-        //negative to align with Controler TBD?
-        DRIVE_MOTOR.set(ControlMode.PercentOutput, - drivePwrPercent);
+        DRIVE_MOTOR.setControl(new DutyCycleOut( drivePwrPercent,
+                        true,
+                        false,
+                        false,
+                        false));
+
     }
 
     @Override
@@ -96,7 +127,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDrvSensorPositionIO(double sensorPos) {
-        DRIVE_MOTOR.setSelectedSensorPosition(0.0);
+        DRIVE_MOTOR.setPosition(sensorPos);
     }
     @Override
     public void reverseDriveIO(boolean enable) {

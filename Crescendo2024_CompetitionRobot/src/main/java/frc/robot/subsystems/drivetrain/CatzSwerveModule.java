@@ -7,7 +7,7 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -55,13 +55,6 @@ public class CatzSwerveModule {
             case SIM : io = 
                     new ModuleIOSim();
                 break;
-
-            case REAL_WITH_PRO : io = 
-                    new ModuleIOPro(driveMotorID, 
-                                    steerMotorID, 
-                                    encoderDIOChannel);
-                break;
-
             default : io = 
                     new ModuleIOReal(driveMotorID, 
                                      steerMotorID, 
@@ -152,16 +145,11 @@ public class CatzSwerveModule {
         double drivePwrVelocityMPS = Conversions.MPSToFalcon(state.speedMetersPerSecond, 
                                                              DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, 
                                                              DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
-        //ff control
+        //ff drive control
         double driveFeedforwardMPS = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
-        //set power for FOC(experimental)
-        if(CatzConstants.currentMode == CatzConstants.Mode.REAL_WITH_PRO) { 
-            io.setDriveControlIO(velocitySetter.withVelocity(drivePwrVelocityMPS));   
-        }
-        else { //set pwr for REAL/SIM
-            setDriveVelocity(drivePwrVelocityMPS + driveFeedforwardMPS);
-        }
+        setDriveVelocity(drivePwrVelocityMPS + driveFeedforwardMPS);
+        
 
         if(m_index == 1) {
             System.out.println("Target " + m_index + ": " + state);
