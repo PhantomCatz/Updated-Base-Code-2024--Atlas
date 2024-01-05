@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.CatzConstants.DriveConstants;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ModuleIOReal implements ModuleIO {
@@ -46,6 +46,7 @@ public class ModuleIOReal implements ModuleIO {
         STEER_MOTOR.restoreFactoryDefaults();
         STEER_MOTOR.setSmartCurrentLimit(DriveConstants.STEER_CURRENT_LIMIT_AMPS);
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
+        STEER_MOTOR.enableVoltageCompensation(12.0);
 
 
         //Drive Motor setup
@@ -67,8 +68,7 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kD = 0.0;
             //ramping
         talonConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveConstants.NEUTRAL_TO_FULL_SECONDS;
-
-        //apply configs
+        //apply driv e configs
         DRIVE_MOTOR.getConfigurator().apply(talonConfigs, 0.050);
 
         //check if drive motor is initialized correctly
@@ -91,13 +91,12 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        //negative to align with Controler TBD?
         DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
     }
 
     @Override
     public void setDrivePwrPercentIO(double drivePwrPercent) {
-        DRIVE_MOTOR.setControl(new DutyCycleOut( drivePwrPercent,
+        DRIVE_MOTOR.setControl(new DutyCycleOut(drivePwrPercent,
                         true,
                         false,
                         false,

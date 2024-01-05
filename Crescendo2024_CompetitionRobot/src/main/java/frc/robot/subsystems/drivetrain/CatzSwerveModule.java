@@ -7,9 +7,6 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,25 +37,19 @@ public class CatzSwerveModule {
 
     private int m_index;
 
-    private VelocityTorqueCurrentFOC velocitySetter = new VelocityTorqueCurrentFOC(0);
-
     public CatzSwerveModule(int driveMotorID, int steerMotorID, int encoderDIOChannel, double offset, int index) {
         this.m_index = index;
 
         switch (CatzConstants.currentMode) {
             case REAL: io = 
-                    new ModuleIOReal(driveMotorID, 
-                                     steerMotorID, 
-                                     encoderDIOChannel);
+                    new ModuleIOReal(driveMotorID, steerMotorID, encoderDIOChannel);
                 break;
 
             case SIM : io = 
                     new ModuleIOSim();
                 break;
             default : io = 
-                    new ModuleIOReal(driveMotorID, 
-                                     steerMotorID, 
-                                     encoderDIOChannel) {};
+                    new ModuleIOReal(driveMotorID, steerMotorID, encoderDIOChannel) {};
                 break;
         }
 
@@ -79,7 +70,7 @@ public class CatzSwerveModule {
         SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
     }
 
-    //----------------------------------------Setting pwr methods
+    //----------------------------------------Setting pwr methods-------------------------------
     public void setSteerPower(double pwr) {
         if(CatzConstants.currentMode == CatzConstants.Mode.SIM) {
            io.setSteerSimPwrIO(pwr);
@@ -121,11 +112,6 @@ public class CatzSwerveModule {
     private double getAbsEncRadians() {
         return (inputs.magEncoderValue - m_wheelOffset) * 2 * Math.PI;
     }
-    //TBD put in autobalance file
-    /*Auto Balance */
-    public void reverseDrive(Boolean reverse) {
-        io.reverseDriveIO(reverse);
-    }
 
     /**
      * Sets the desired state for the module.
@@ -133,10 +119,6 @@ public class CatzSwerveModule {
      * @param state Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState state) {
-
-        //optimize wheel angles
-        state = CatzMathUtils.optimize(state, getCurrentRotation());
-
         //calculate turn pwr percent
         double steerPIDpwr = - m_ProfiledPID.calculate(getAbsEncRadians(), state.angle.getRadians()); 
         setSteerPower(steerPIDpwr);
@@ -147,7 +129,7 @@ public class CatzSwerveModule {
                                                              DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
         //ff drive control
         double driveFeedforwardMPS = m_driveFeedforward.calculate(state.speedMetersPerSecond);
-
+        //set drive velocity
         setDriveVelocity(drivePwrVelocityMPS + driveFeedforwardMPS);
         
 
@@ -161,6 +143,12 @@ public class CatzSwerveModule {
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", drivePwrVelocityMPS);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current velocity", getModuleState().speedMetersPerSecond);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
+    }
+
+    //optimze wheel angles before sending to setdesiredstate method for logging
+    public SwerveModuleState optimizeWheelAngles(SwerveModuleState unoptimizedState) {
+        SwerveModuleState optimizedState = CatzMathUtils.optimize(unoptimizedState, getCurrentRotation()); 
+        return optimizedState;
     }
 
     public void resetDriveEncs() {

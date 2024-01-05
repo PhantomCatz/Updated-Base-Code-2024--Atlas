@@ -1,16 +1,24 @@
 package frc.robot.commands.DriveCmds;
 
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.google.flatbuffers.Constants;
+import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.TrajectoryConstants;
+
+import java.util.List;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -33,7 +41,25 @@ public class PPTrajectoryFollowingCmd extends Command {
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
         this.trajectory = new PathPlannerTrajectory(
                                 newPath, 
-                                new ChassisSpeeds(0.0, 0.0, 0.0), 
+                                DriveConstants.
+                                    swerveDriveKinematics.
+                                        toChassisSpeeds(m_driveTrain.getModuleStates()),
+                                m_driveTrain.getRotation2d());
+
+        controller = DriveConstants.ppholonomicDriveController;
+        addRequirements(m_driveTrain);
+    }
+
+    //Trajectories w/o path planner
+    public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
+
+        PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
+
+        this.trajectory = new PathPlannerTrajectory(
+                                newPath, 
+                                DriveConstants.
+                                    swerveDriveKinematics.
+                                        toChassisSpeeds(m_driveTrain.getModuleStates()), 
                                 m_driveTrain.getRotation2d());
 
         controller = DriveConstants.ppholonomicDriveController;
@@ -75,17 +101,17 @@ public class PPTrajectoryFollowingCmd extends Command {
     @Override
     public boolean isFinished() {
         // Finish command if the total time the path takes is over
-        double driveX =        m_driveTrain.getPose().getX();
-        double driveY =        m_driveTrain.getPose().getY();
-        double driveRotation = m_driveTrain.getPose().getRotation().getRadians();
+        double currentPosX =        m_driveTrain.getPose().getX();
+        double currentPosY =        m_driveTrain.getPose().getY();
+        double currentRotation =    m_driveTrain.getPose().getRotation().getRadians();
 
-        double desiredX =        trajectory.getEndState().positionMeters.getX();
-        double desiredY =        trajectory.getEndState().positionMeters.getY();
-        double desiredRotation = trajectory.getEndState().positionMeters.getAngle().getRadians();
+        double desiredPosX =        trajectory.getEndState().positionMeters.getX();
+        double desiredPosY =        trajectory.getEndState().positionMeters.getY();
+        double desiredRotation =    trajectory.getEndState().positionMeters.getAngle().getRadians();
 
-        double xError =        Math.abs(desiredX - driveX);
-        double yError =        Math.abs(desiredY - driveY);
-        double rotationError = Math.abs(desiredRotation - driveRotation);
+        double xError =        Math.abs(desiredPosX - currentPosX);
+        double yError =        Math.abs(desiredPosY - currentPosY);
+        double rotationError = Math.abs(desiredRotation - currentRotation);
 
         return (timer.get() > trajectory.getTotalTimeSeconds()) ||
                (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 

@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
@@ -27,7 +26,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     private SubsystemCatzDrivetrain driveTrain; 
     private SubsystemCatzVision vision;
 
-    private final CatzAutonomous auton = new CatzAutonomous();
+    private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
     private CommandXboxController xboxDrv;
@@ -54,10 +53,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
  
- 
-     xboxDrv.start().onTrue(driveTrain.flipGyro());
- 
-     xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
+    xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+    xboxDrv.start().onTrue(driveTrain.flipGyro());
+    xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
  
    }
 
