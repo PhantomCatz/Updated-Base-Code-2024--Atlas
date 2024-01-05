@@ -68,8 +68,6 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kD = 0.0;
             //ramping
         talonConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveConstants.NEUTRAL_TO_FULL_SECONDS;
-        //apply driv e configs
-        DRIVE_MOTOR.getConfigurator().apply(talonConfigs, 0.050);
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
