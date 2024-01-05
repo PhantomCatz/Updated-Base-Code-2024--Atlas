@@ -11,7 +11,7 @@ import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class TeleopDriveCmd extends Command {
 
-  private SubsystemCatzDrivetrain driveTrain = SubsystemCatzDrivetrain.getInstance();
+  private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
   Supplier<Double> supplierLeftJoyX;
   Supplier<Double> supplierLeftJoyY;
   Supplier<Double> supplierRightJoyX;
@@ -30,7 +30,7 @@ public class TeleopDriveCmd extends Command {
     this.supplierPwrMode = supplierPwrMode;
     this.isFieldOrientedDisabled = supplierFieldOriented;
 
-    addRequirements(driveTrain);
+    addRequirements(m_driveTrain);
   }
 
   // Called when the command is initially scheduled.
@@ -58,18 +58,18 @@ public class TeleopDriveCmd extends Command {
     } else {
         // Relative to field
         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                                            xSpeed, ySpeed, turningSpeed, driveTrain.getRotation2d()
+                                            xSpeed, ySpeed, turningSpeed, m_driveTrain.getRotation2d()
                                                               );
     }
 
     //send new chassisspeeds object to the drivetrain
-    driveTrain.driveRobotWithCorrectedDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithCorrectedDynamics(chassisSpeeds);
 
     //logging
     Logger.recordOutput("robot xspeed", xSpeed);
     Logger.recordOutput("robot yspeed", ySpeed);
     Logger.recordOutput("robot turnspeed", turningSpeed);
-    Logger.recordOutput("robot orientation", driveTrain.getRotation2d().getRadians());
+    Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
     Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
     Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 

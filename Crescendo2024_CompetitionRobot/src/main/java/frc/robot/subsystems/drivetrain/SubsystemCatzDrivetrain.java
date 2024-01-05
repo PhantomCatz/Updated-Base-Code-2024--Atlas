@@ -2,6 +2,13 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,9 +18,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
@@ -44,6 +53,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     public final CatzSwerveModule LT_BACK_MODULE;
     public final CatzSwerveModule RT_FRNT_MODULE;
     public final CatzSwerveModule RT_BACK_MODULE;
+
+    // boolean for determining whether to use vision estimates in pose estimation
+    private boolean isVisionEnabled = true;
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -86,16 +98,25 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
+        // Configure AutoBuilder for PathPlanner
+        AutoBuilder.configureHolonomic(
+        this::getPose,
+        this::resetPosition,
+        () -> DriveConstants.
+            swerveDriveKinematics.
+                toChassisSpeeds(getModuleStates()),
+        this::driveRobotWithoutCorrectedDynamics,
+        DriveConstants.pathFollowingConfig,
+        this);
     }
 
     // Periodic update method for the drive train subsystem
     @Override
     public void periodic() {
         // Update inputs (sensors/encoders) for code logic and advantage kit
-        LT_FRNT_MODULE.periodic();
-        LT_BACK_MODULE.periodic();
-        RT_BACK_MODULE.periodic();
-        RT_FRNT_MODULE.periodic();
+        for (CatzSwerveModule module : m_swerveModules) {
+            module.periodic();
+        }
 
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
@@ -104,17 +125,19 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-        // AprilTag logic to possibly update pose estimator per camera
-        for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
-            m_poseEstimator.addVisionMeasurement(
-                    vision.getVisionOdometry().get(i).getPose(),
-                    vision.getVisionOdometry().get(i).getTimestamp(),
-                    VecBuilder.fill(
-                            vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
-                            vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
-                            5.0));
+        if(isVisionEnabled) {
+            System.out.println("vision");
+            // AprilTag logic to possibly update pose estimator per camera
+            for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
+                m_poseEstimator.addVisionMeasurement(
+                        vision.getVisionOdometry().get(i).getPose(),
+                        vision.getVisionOdometry().get(i).getTimestamp(),
+                        VecBuilder.fill(
+                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
+                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
+                                5.0));
+            }
         }
 
         //logging
@@ -147,14 +170,22 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Scale down wheel speeds
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.MAX_SPEED_DESATURATION);
 
+        //optimize wheel angles
+        SwerveModuleState[] optimizedDesiredStates = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {  
+            // The module returns the optimized state, useful for logging
+            optimizedDesiredStates[i] = m_swerveModules[i].optimizeWheelAngles(desiredStates[i]);
+        }
+
         // Set module states to each of the swerve modules
-        LT_FRNT_MODULE.setDesiredState(desiredStates[0]);
-        LT_BACK_MODULE.setDesiredState(desiredStates[1]);
-        RT_BACK_MODULE.setDesiredState(desiredStates[2]);
-        RT_FRNT_MODULE.setDesiredState(desiredStates[3]);
+        LT_FRNT_MODULE.setDesiredState(optimizedDesiredStates[0]);
+        LT_BACK_MODULE.setDesiredState(optimizedDesiredStates[1]);
+        RT_BACK_MODULE.setDesiredState(optimizedDesiredStates[2]);
+        RT_FRNT_MODULE.setDesiredState(optimizedDesiredStates[3]);
 
         // Logging
-        Logger.recordOutput("Drive/module states", desiredStates);
+        Logger.recordOutput("Drive/unoptimized module states", desiredStates);
+        Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
     }
 
     /**
@@ -217,15 +248,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return gyroInputs.gyroRoll;
     }
 
-    // Get the current pose of the robot
-    public Pose2d getPose() {
-        Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
-        currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
-        return currentPosition;
-    }
-
-    //---------------------------------------------Heading Methods---------------------------------------------
-
     // Get the heading of the robot in a integer quantity
     public double getHeading() {
         return Math.IEEEremainder(getGyroAngle(), 360);
@@ -246,7 +268,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
 
-    //---------------------Enc resets---------------------
+    // Get the current pose of the robot
+    public Pose2d getPose() {
+        Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
+        currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
+        return currentPosition;
+    }
+
+    //----------------------------------------------Enc resets-------------------------------------------------------
 
     // Reset drive encoders for all swerve modules
     public void resetDriveEncs() {
@@ -277,6 +306,21 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             modulePositions[i] = m_swerveModules[i].getModulePosition();
         }
         return modulePositions;
+    }
+
+    //----------------------------------------vsion-----------------------------------------
+    public Command toggleVisionEnableCommand() {
+        if(isVisionEnabled == true) {
+            return run(()-> setVisionEnable(false));
+        }
+        else {
+            return run(()-> setVisionEnable(true));
+        }
+    }
+
+    //access method for determining whether to use vision in pose estimation
+    private void setVisionEnable(boolean enable) {
+        isVisionEnabled = enable;
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem

@@ -31,8 +31,8 @@ public class VisionIOLimeLight implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
-        boolean isAllianceBlue = (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue));
-        boolean isAllianceRed  = (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red));
+        boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
+        boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
 
         // collects pose information based off network tables and orients itself depending on alliance side
         NetworkTableEntry botposeEntry;

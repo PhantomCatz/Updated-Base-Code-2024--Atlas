@@ -1,7 +1,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -140,11 +142,16 @@ public final class CatzConstants {
 
     // calculates target chassis motion when given current position and desired trajectory
     public static final PPHolonomicDriveController ppholonomicDriveController = new PPHolonomicDriveController(
-    new PIDConstants(0.35, 0, 0), // PID values for x offset
-    new PIDConstants(0.35, 0, 0), // PID values for rotation 
-    MAX_SPEED,
-    MODULE_DISTANCE_FROM_CENTER
+        new PIDConstants(0.35, 0, 0), // PID values for x offset
+        new PIDConstants(0.35, 0, 0), // PID values for rotation 
+        MAX_SPEED,
+        MODULE_DISTANCE_FROM_CENTER
     );
+
+    public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
+        MAX_SPEED, // Max module speed, in m/s
+        MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
+        new ReplanningConfig()); // Default path replanning config. See the API for the options here
   }
 
 }

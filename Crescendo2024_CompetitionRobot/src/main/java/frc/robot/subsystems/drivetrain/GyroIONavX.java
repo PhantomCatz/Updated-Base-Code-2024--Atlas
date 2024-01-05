@@ -6,7 +6,7 @@ import frc.robot.CatzConstants.DriveConstants;
 public class GyroIONavX implements GyroIO 
 {
     private final AHRS navX;
-  
+
     public GyroIONavX() {
         navX = new AHRS();
     }
@@ -17,6 +17,7 @@ public class GyroIONavX implements GyroIO
       inputs.gyroAngle = navX.getAngle();
       inputs.gyroYaw = navX.getYaw();
       inputs.gyroRoll = navX.getRoll();
+      inputs.gyroConnected = navX.isConnected();
     }
 
     @Override

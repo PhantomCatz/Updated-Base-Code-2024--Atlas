@@ -9,6 +9,7 @@ public interface GyroIO
     public double gyroAngle;
     public double gyroYaw;
     public double gyroRoll;
+    public boolean gyroConnected;
   }
 
   public default void updateInputs(GyroIOInputs inputs) {}

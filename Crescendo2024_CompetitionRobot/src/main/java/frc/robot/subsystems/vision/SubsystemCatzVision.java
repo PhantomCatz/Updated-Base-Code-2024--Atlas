@@ -44,11 +44,10 @@ public class SubsystemCatzVision extends SubsystemBase {
             Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
 
             //checks for when to process vision
-            if (inputs[i].hasTarget
-                    && inputs[i].isNewVisionPose
-                    && !DriverStation.isAutonomous()
-                    && inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) 
-            {
+            if (inputs[i].hasTarget && 
+                inputs[i].isNewVisionPose && 
+                !DriverStation.isAutonomous() && 
+                inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
                 if (useSingleTag) {
                     if (inputs[i].singleIDUsed == acceptableTagID) {
                         processVision(i);
@@ -57,7 +56,6 @@ public class SubsystemCatzVision extends SubsystemBase {
                 else {
                     processVision(i);
                 }
-
             }
         }
 

@@ -5,8 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
-public interface ModuleIO 
-{
+public interface ModuleIO {
  @AutoLog
  public static class ModuleIOInputs {
     public double gyroAngle = 0.0;
