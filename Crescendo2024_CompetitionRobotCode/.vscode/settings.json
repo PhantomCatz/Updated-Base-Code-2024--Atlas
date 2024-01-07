@@ -25,6 +25,5 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests",
-  "discord.enabled": true
+  "java.test.defaultConfig": "WPIlibUnitTests"
 }
