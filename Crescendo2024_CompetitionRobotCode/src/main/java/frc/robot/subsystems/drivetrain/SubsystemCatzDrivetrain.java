@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -107,6 +108,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 toChassisSpeeds(getModuleStates()),
         this::driveRobotWithoutCorrectedDynamics,
         DriveConstants.pathFollowingConfig,
+        ()->!(DriverStation.
+                getAlliance().
+                            get() == DriverStation.Alliance.Red),
         this);
     }
 

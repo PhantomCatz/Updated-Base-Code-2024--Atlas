@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import java.sql.Driver;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
