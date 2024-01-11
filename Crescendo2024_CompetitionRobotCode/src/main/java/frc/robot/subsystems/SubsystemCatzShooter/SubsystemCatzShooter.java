@@ -12,6 +12,7 @@ import frc.robot.CatzConstants;
 public class SubsystemCatzShooter extends SubsystemBase {
   
   private final ShooterIO io;
+  private static SubsystemCatzShooter instance;
 
   public SubsystemCatzShooter() {
 
@@ -38,7 +39,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command setShooterDisabled() {
-  return run(()->io.shootWithVelocity());
+    return run(()->io.setShooterDisabled());
+  }
+
+  // Get the singleton instance of the CatzDriveTrainSubsystem
+  public static SubsystemCatzShooter getInstance() {
+      return instance;
   }
 
 }

@@ -125,8 +125,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     * singleton implenentation of vision
     * Any new cameras should be declared here
     */
-    public static SubsystemCatzVision getInstance()
-    {
+    public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
                 new VisionIOLimeLight("Limelight Vision", VisionConstants.LIMELIGHT_OFFSET)
