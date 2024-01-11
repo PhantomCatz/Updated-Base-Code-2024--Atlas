@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.TrajectoryConstants;
 
