@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
+import frc.robot.subsystems.SubsystemCatzArm.SubsystemCatzArm;
+import frc.robot.subsystems.SubsystemCatzClimb.SubsystemCatzClimb;
 import frc.robot.subsystems.SubsystemCatzShooter.SubsystemCatzShooter;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -27,6 +29,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     private SubsystemCatzDrivetrain driveTrain; 
     private SubsystemCatzVision vision;
     private SubsystemCatzShooter shooter;
+    private SubsystemCatzClimb climb;
+    private SubsystemCatzArm arm;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
@@ -42,8 +46,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    public RobotContainer() {
     //instantiate subsystems
      driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-     vision = SubsystemCatzVision        .getInstance();
-     shooter = SubsystemCatzShooter      .getInstance();
+     vision     = SubsystemCatzVision.getInstance();
+
+     shooter    = SubsystemCatzShooter.getInstance();
+     climb      = SubsystemCatzClimb.getInstance();
+     arm        = SubsystemCatzArm.getInstance();
+
  
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
