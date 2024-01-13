@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.SubsystemCatzClimb;
+package frc.robot.subsystems.SubsystemCatzElevator;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -10,23 +10,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 
 
-public class SubsystemCatzClimb extends SubsystemBase {
+public class SubsystemCatzElevator extends SubsystemBase {
   
-  private final ClimbIO io;
-  private static SubsystemCatzClimb instance;
-  private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+  private final ElevatorIO io;
+  private static SubsystemCatzElevator instance;
+  private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  public SubsystemCatzClimb() {
+  public SubsystemCatzElevator() {
 
             switch (CatzConstants.currentMode) {
             case REAL: io = 
-                    new ClimbIOReal();
+                    new ElevatorIOReal();
                 break;
 
             case SIM : io = null;
                 break;
             default : io = 
-                    new ClimbIOReal() {};
+                    new ElevatorIOReal() {};
                 break;
         }
   }
@@ -34,14 +34,14 @@ public class SubsystemCatzClimb extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("climb/inputs", inputs);
+    Logger.processInputs("Elevator/inputs", inputs);
 
-    // This method will be called once per scheduler run
+
     io.exampleAccessMethod(0);
   }
 
   // Get the singleton instance of the ClimbSubsystem
-  public static SubsystemCatzClimb getInstance() {
+  public static SubsystemCatzElevator getInstance() {
       return instance;
   }
 

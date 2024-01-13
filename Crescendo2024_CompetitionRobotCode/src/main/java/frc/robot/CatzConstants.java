@@ -24,7 +24,7 @@ import edu.wpi.first.math.util.Units;
  * This class is where reusable constants are defined
  ***/
 public final class CatzConstants {
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
   public static final Mode currentMode = Mode.REAL;
 
   public static enum Mode {

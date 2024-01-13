@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
 
@@ -17,6 +18,12 @@ public class ShooterIOReal implements ShooterIO {
     private final TalonFX SHOOTER_MOTOR_BTM_RT;
     private final TalonFX SHOOTER_MOTOR_TOP_RT;
     private final TalonFX SHOOTER_MOTOR_TOP_LT;
+
+    //tunable motor velocities
+    LoggedTunableNumber shooterVelBtmLt = new LoggedTunableNumber("BtmLtShooter", 12);
+    LoggedTunableNumber shooterVelBtmRt = new LoggedTunableNumber("BtmRtShooter", 12);
+    LoggedTunableNumber shooterVelTopRt = new LoggedTunableNumber("TopRtShooter", 12);
+    LoggedTunableNumber shooterVelTopLt = new LoggedTunableNumber("TopLtShooter", 12);
 
     TalonFX[] shooterArray = new TalonFX[4];
 
@@ -81,10 +88,10 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void shootWithVelocity() {
-        SHOOTER_MOTOR_BTM_LT.setControl(new VelocityDutyCycle(12));
-        SHOOTER_MOTOR_BTM_RT.setControl(new VelocityDutyCycle(12));
-        SHOOTER_MOTOR_TOP_RT.setControl(new VelocityDutyCycle(12));
-        SHOOTER_MOTOR_TOP_LT.setControl(new VelocityDutyCycle(12));
+        SHOOTER_MOTOR_BTM_LT.setControl(new VelocityDutyCycle(shooterVelBtmLt.get()));
+        SHOOTER_MOTOR_BTM_RT.setControl(new VelocityDutyCycle(shooterVelBtmRt.get()));
+        SHOOTER_MOTOR_TOP_RT.setControl(new VelocityDutyCycle(shooterVelTopRt.get()));
+        SHOOTER_MOTOR_TOP_LT.setControl(new VelocityDutyCycle(shooterVelBtmLt.get()));
     }
 
     @Override
