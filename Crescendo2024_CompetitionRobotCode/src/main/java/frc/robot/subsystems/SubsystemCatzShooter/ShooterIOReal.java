@@ -28,10 +28,10 @@ public class ShooterIOReal implements ShooterIO {
 
     public ShooterIOReal() {
                 //Drive Motor setup
-        SHOOTER_MOTOR_BTM_LT = new TalonFX(0);
-        SHOOTER_MOTOR_BTM_RT = new TalonFX(1);
-        SHOOTER_MOTOR_TOP_RT = new TalonFX(2);
-        SHOOTER_MOTOR_TOP_LT = new TalonFX(2);
+        SHOOTER_MOTOR_BTM_LT = new TalonFX(6);
+        SHOOTER_MOTOR_BTM_RT = new TalonFX(7);
+        SHOOTER_MOTOR_TOP_RT = new TalonFX(8);
+        SHOOTER_MOTOR_TOP_LT = new TalonFX(9);
 
                 //create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_BTM_LT;
