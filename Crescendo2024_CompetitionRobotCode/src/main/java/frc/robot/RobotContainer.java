@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
@@ -25,13 +26,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     
     //subsystems
-    private SubsystemCatzDrivetrain driveTrain; 
-    private SubsystemCatzVision vision;
+    //private SubsystemCatzDrivetrain driveTrain; 
+    //private SubsystemCatzVision vision;
     private SubsystemCatzShooter shooter;
-    private SubsystemCatzClimb climb;
-    private SubsystemCatzElevator arm;
+    //private SubsystemCatzClimb climb;
+    //private SubsystemCatzElevator arm;
 
-    private CatzAutonomous auton = new CatzAutonomous();
+    //private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
     private CommandXboxController xboxDrv;
@@ -44,12 +45,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-     vision     = SubsystemCatzVision.getInstance();
+     //driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+     //vision     = SubsystemCatzVision.getInstance();
 
      shooter    = SubsystemCatzShooter.getInstance();
-     climb      = SubsystemCatzClimb.getInstance();
-     arm        = SubsystemCatzElevator.getInstance();
+    //  climb      = SubsystemCatzClimb.getInstance();
+    //  arm        = SubsystemCatzElevator.getInstance();
 
  
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
@@ -63,10 +64,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
  
-    xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    xboxDrv.start().onTrue(driveTrain.flipGyro());
-    xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
+    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+    // xboxDrv.start().onTrue(driveTrain.flipGyro());
+    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
 
     //shooter activation
     xboxDrv.x().onTrue(shooter.setShooterActive())
@@ -76,11 +77,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                                      ()-> xboxDrv.getLeftY(),
-                                                      ()-> xboxDrv.getRightX(),
-                                                      ()-> xboxDrv.getRightTriggerAxis(), 
-                                                      ()-> xboxDrv.b().getAsBoolean()));
+      // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                                      // ()-> xboxDrv.getLeftY(),
+                                                      // ()-> xboxDrv.getRightX(),
+                                                      // ()-> xboxDrv.getRightTriggerAxis(), 
+                                                      // ()-> xboxDrv.b().getAsBoolean()));
     
    }
 
@@ -90,6 +91,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     * @return the command to run in autonomous
     */
    public Command getAutonomousCommand() {
-     return auton.getCommand();
-   }
+     //return auton.getCommand();
+      return new SequentialCommandGroup();
+    }
 }

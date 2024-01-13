@@ -73,7 +73,7 @@ public final class CatzConstants {
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;//TBD put in constants
     public static final int RT_BACK_DRIVE_ID = 22;
-    public static final int RT_FRNT_DRIVE_ID = 7;
+    public static final int RT_FRNT_DRIVE_ID = 9;
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
