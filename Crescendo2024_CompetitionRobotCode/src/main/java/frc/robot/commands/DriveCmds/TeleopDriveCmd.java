@@ -41,8 +41,8 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    double xSpeed = supplierLeftJoyY.get();
-    double ySpeed = supplierLeftJoyX.get();
+    double xSpeed = -supplierLeftJoyY.get();
+    double ySpeed = -supplierLeftJoyX.get();
     double turningSpeed = -supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
@@ -63,7 +63,7 @@ public class TeleopDriveCmd extends Command {
     }
 
     //send new chassisspeeds object to the drivetrain
-    m_driveTrain.driveRobotWithoutCorrectedDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithCorrectedDynamics(chassisSpeeds);
 
     //logging
     Logger.recordOutput("robot xspeed", xSpeed);

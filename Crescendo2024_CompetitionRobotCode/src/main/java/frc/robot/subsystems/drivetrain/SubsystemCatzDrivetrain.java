@@ -106,7 +106,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         () -> DriveConstants.
             swerveDriveKinematics.
                 toChassisSpeeds(getModuleStates()),
-        this::driveRobotWithoutCorrectedDynamics,
+        this::driveRobotWithCorrectedDynamics,
         DriveConstants.pathFollowingConfig,
         ()->!(DriverStation.
                 getAlliance().
@@ -243,7 +243,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Get the gyro angle (negative due to the weird coordinate system)
     public double getGyroAngle() {
-        return - gyroInputs.gyroAngle;
+        return -gyroInputs.gyroAngle;
     }
 
     // Get the roll angle of the gyro

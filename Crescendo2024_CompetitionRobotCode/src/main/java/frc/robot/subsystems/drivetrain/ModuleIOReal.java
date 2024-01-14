@@ -35,7 +35,6 @@ public class ModuleIOReal implements ModuleIO {
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs driveConfigs = new Slot0Configs();
 
-
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
 
         //mag encoder setup
@@ -66,7 +65,7 @@ public class ModuleIOReal implements ModuleIO {
             //pid
         driveConfigs.kP = 0.1;
         driveConfigs.kI = 0.0;
-        driveConfigs.kD = 0.0;
+        driveConfigs.kD = 0.001;
             //ramping
         talonConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveConstants.NEUTRAL_TO_FULL_SECONDS;
 

@@ -1,13 +1,18 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.subsystems.SubsystemCatzClimb.SubsystemCatzClimb;
-import frc.robot.subsystems.SubsystemCatzElevator.SubsystemCatzElevator;
-import frc.robot.subsystems.SubsystemCatzShooter.SubsystemCatzShooter;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -45,14 +50,17 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-     vision     = SubsystemCatzVision.getInstance();
+    driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+    vision     = SubsystemCatzVision.getInstance();
 
-     //shooter    = SubsystemCatzShooter.getInstance();
+    //shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
 
- 
+    NamedCommands.registerCommand("Print", new PrintCommand("hi"));
+    NamedCommands.registerCommand("End", new PrintCommand("end"));
+    
+
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
  
@@ -90,8 +98,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     *
     * @return the command to run in autonomous
     */
-   public Command getAutonomousCommand() {
-     return auton.getCommand();
-      //return new SequentialCommandGroup();
+    public Command getAutonomousCommand() {
+      return auton.getCommand();
     }
 }

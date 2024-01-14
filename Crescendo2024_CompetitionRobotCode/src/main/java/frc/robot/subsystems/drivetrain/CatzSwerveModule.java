@@ -26,9 +26,9 @@ public class CatzSwerveModule {
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
                 
 
-    private final double kP = 0.1; //cuz error is in tenths place so no need to mutiply kp value
+    private final double kP = 0.15; //cuz error is in tenths place so no need to mutiply kp value
     private final double kI = 0.0;
-    private final double kD = 0.001;
+    private final double kD = 0.0015;
 
     private double m_wheelOffset;
 
@@ -120,23 +120,20 @@ public class CatzSwerveModule {
         setSteerPower(steerPIDpwr);
 
         //calculate drive pwr
-        double drivePwrVelocityFalcon = Conversions.MPSToFalcon(state.speedMetersPerSecond, 
-                                                                DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, 
-                                                                DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
+        double driveRPS = Conversions.MPSToRPS(state.speedMetersPerSecond);
         //ff drive control
         //double driveFeedforwardFalcon = m_driveFeedforward.calculate(state.speedMetersPerSecond);
         //set drive velocity
-        setDriveVelocity(drivePwrVelocityFalcon);
-        
+        setDriveVelocity(driveRPS);
 
         if(m_index == 1) {
-            System.out.println("Target " + m_index + ": " + state);
-            System.out.println("Current " + m_index + ": " + getModuleState());
+            //System.out.println("Target " + m_index + ": " + state);
+            //System.out.println("Current " + m_index + ": " + getModuleState());
         }
         //logging
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current roation" , getAbsEncRadians());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target Angle", state.angle.getRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", drivePwrVelocityFalcon);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", driveRPS);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current velocity", getModuleState().speedMetersPerSecond);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
     }
@@ -157,7 +154,7 @@ public class CatzSwerveModule {
     }
 
     public SwerveModuleState getModuleState() {
-        double velocity = Conversions.falconToMPS(inputs.driveMtrVelocity, DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, DriveConstants.SDS_L2_GEAR_RATIO);
+        double velocity = Conversions.RPSToMPS(inputs.driveMtrVelocity);
         
         return new SwerveModuleState(velocity, getCurrentRotation());
     }
@@ -167,6 +164,7 @@ public class CatzSwerveModule {
     }
     
     public double getDriveDistanceMeters() {
-        return  ((inputs.driveMtrSensorPosition / 2048)/ DriveConstants.SDS_L2_GEAR_RATIO) * DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE;
+        // seconds cancels out
+        return Conversions.RPSToMPS(inputs.driveMtrSensorPosition);
     }
 }
