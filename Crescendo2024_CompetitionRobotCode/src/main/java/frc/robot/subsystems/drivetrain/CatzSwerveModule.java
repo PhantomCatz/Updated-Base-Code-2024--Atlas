@@ -7,31 +7,28 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.Conversions;
 
-
 public class CatzSwerveModule {
-
     private final ModuleIO io;
-    private final ModuleIOInputsAutoLogged   inputs = new ModuleIOInputsAutoLogged();
+    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
-    private ProfiledPIDController m_ProfiledPID;
+    private PIDController m_PID;
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
                 
 
-    private final double kP = 0.55; //cuz error is in tenths place so no need to mutiply kp value
+    private final double kP = 0.1; //cuz error is in tenths place so no need to mutiply kp value
     private final double kI = 0.0;
-    private final double kD = 0.0175;
+    private final double kD = 0.001;
 
     private double m_wheelOffset;
 
@@ -53,8 +50,7 @@ public class CatzSwerveModule {
                 break;
         }
 
-        m_ProfiledPID = new ProfiledPIDController(kP, kI, kD, 
-                                                    new TrapezoidProfile.Constraints(3.0, 3.0)); //tbd need to find out max velocity and acceleration for steering mtrs
+        m_PID = new PIDController(kP, kI, kD);
 
         m_wheelOffset = offset;
     }
@@ -120,17 +116,17 @@ public class CatzSwerveModule {
      */
     public void setDesiredState(SwerveModuleState state) {
         //calculate turn pwr percent
-        double steerPIDpwr = - m_ProfiledPID.calculate(getAbsEncRadians(), state.angle.getRadians()); 
+        double steerPIDpwr = - m_PID.calculate(getAbsEncRadians(), state.angle.getRadians()); 
         setSteerPower(steerPIDpwr);
 
         //calculate drive pwr
-        double drivePwrVelocityMPS = Conversions.MPSToFalcon(state.speedMetersPerSecond, 
+        double drivePwrVelocityFalcon = Conversions.MPSToFalcon(state.speedMetersPerSecond, 
                                                              DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, 
                                                              DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
         //ff drive control
-        double driveFeedforwardMPS = m_driveFeedforward.calculate(state.speedMetersPerSecond);
+        //double driveFeedforwardFalcon = m_driveFeedforward.calculate(state.speedMetersPerSecond);
         //set drive velocity
-        setDriveVelocity(drivePwrVelocityMPS + driveFeedforwardMPS);
+        setDriveVelocity(drivePwrVelocityFalcon);
         
 
         if(m_index == 1) {
@@ -140,7 +136,7 @@ public class CatzSwerveModule {
         //logging
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current roation" , getAbsEncRadians());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target Angle", state.angle.getRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", drivePwrVelocityMPS);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", drivePwrVelocityFalcon);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current velocity", getModuleState().speedMetersPerSecond);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
     }

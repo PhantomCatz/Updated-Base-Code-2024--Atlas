@@ -26,9 +26,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     
     //subsystems
-    //private SubsystemCatzDrivetrain driveTrain; 
-    //private SubsystemCatzVision vision;
-    private SubsystemCatzShooter shooter;
+    private SubsystemCatzDrivetrain driveTrain; 
+    private SubsystemCatzVision vision;
+    //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
     //private SubsystemCatzElevator arm;
 
@@ -45,10 +45,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-     //driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-     //vision     = SubsystemCatzVision.getInstance();
+     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+     vision     = SubsystemCatzVision.getInstance();
 
-     shooter    = SubsystemCatzShooter.getInstance();
+     //shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
 
@@ -70,18 +70,18 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
 
     //shooter activation
-    xboxDrv.x().onTrue(shooter.setShooterActive())
-               .onFalse(shooter.setShooterDisabled());
+    //xboxDrv.x().onTrue(shooter.setShooterActive())
+      //         .onFalse(shooter.setShooterDisabled());
  
    }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                                      // ()-> xboxDrv.getLeftY(),
-                                                      // ()-> xboxDrv.getRightX(),
-                                                      // ()-> xboxDrv.getRightTriggerAxis(), 
-                                                      // ()-> xboxDrv.b().getAsBoolean()));
+      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                                      ()-> xboxDrv.getLeftY(),
+                                                      ()-> xboxDrv.getRightX(),
+                                                      ()-> xboxDrv.getRightTriggerAxis(), 
+                                                      ()-> xboxDrv.b().getAsBoolean()));
     
    }
 

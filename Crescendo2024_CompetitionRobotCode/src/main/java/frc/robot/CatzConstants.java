@@ -73,7 +73,7 @@ public final class CatzConstants {
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;//TBD put in constants
     public static final int RT_BACK_DRIVE_ID = 22;
-    public static final int RT_FRNT_DRIVE_ID = 9;
+    public static final int RT_FRNT_DRIVE_ID = 7;
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
@@ -94,16 +94,16 @@ public final class CatzConstants {
     public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
     public static final double  VEL_FF                        = 1.5;
 
-    public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
-    private static final double MODULE_DISTANCE_FROM_CENTER = 0.298;
+    public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 
     //not following the original coordinate system since the robot coordinate system is inverted
-    private static final Translation2d SWERVE_LEFT_FRONT_LOCATION  = new Translation2d(MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER);
-    private static final Translation2d SWERVE_LEFT_BACK_LOCATION   = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER);
-    private static final Translation2d SWERVE_RIGHT_BACK_LOCATION  = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER);
-    private static final Translation2d SWERVE_RIGHT_FRONT_LOCATION = new Translation2d(MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER);
+    private static final Translation2d SWERVE_LEFT_FRONT_LOCATION  = new Translation2d(MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
+    private static final Translation2d SWERVE_LEFT_BACK_LOCATION   = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
+    private static final Translation2d SWERVE_RIGHT_BACK_LOCATION  = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
+    private static final Translation2d SWERVE_RIGHT_FRONT_LOCATION = new Translation2d(MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
     
     // calculates the orientation and speed of individual swerve modules when given the motion of the whole robot
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
@@ -115,7 +115,7 @@ public final class CatzConstants {
     
     public static final double MAX_SPEED = 3.0; // meters per second
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 2.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = MAX_SPEED + MAX_ANGSPEED_RAD_PER_SEC * MODULE_DISTANCE_FROM_CENTER * Math.sqrt(2);
+    public static final double MAX_SPEED_DESATURATION = MAX_SPEED + MAX_ANGSPEED_RAD_PER_SEC * MODULE_DISTANCE_FROM_CENTER;
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
