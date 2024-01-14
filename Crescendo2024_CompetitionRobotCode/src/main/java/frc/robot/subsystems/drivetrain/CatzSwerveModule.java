@@ -121,8 +121,8 @@ public class CatzSwerveModule {
 
         //calculate drive pwr
         double drivePwrVelocityFalcon = Conversions.MPSToFalcon(state.speedMetersPerSecond, 
-                                                             DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, 
-                                                             DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
+                                                                DriveConstants.DRVTRAIN_WHEEL_CIRCUMFERENCE, 
+                                                                DriveConstants.SDS_L2_GEAR_RATIO); //to set is as a gear reduction not an overdrive
         //ff drive control
         //double driveFeedforwardFalcon = m_driveFeedforward.calculate(state.speedMetersPerSecond);
         //set drive velocity

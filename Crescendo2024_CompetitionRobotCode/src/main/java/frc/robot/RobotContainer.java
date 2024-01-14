@@ -32,7 +32,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //private SubsystemCatzClimb climb;
     //private SubsystemCatzElevator arm;
 
-    //private CatzAutonomous auton = new CatzAutonomous();
+    private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
     private CommandXboxController xboxDrv;
@@ -91,7 +91,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     * @return the command to run in autonomous
     */
    public Command getAutonomousCommand() {
-     //return auton.getCommand();
-      return new SequentialCommandGroup();
+     return auton.getCommand();
+      //return new SequentialCommandGroup();
     }
 }
