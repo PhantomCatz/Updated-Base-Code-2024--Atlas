@@ -25,6 +25,7 @@ public class VisionIOLimeLight implements VisionIO {
     public VisionIOLimeLight(String name, Transform3d limelightOffset) {
         this.name = name;
         this.cameraOffset = limelightOffset;
+        System.out.println(name);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class VisionIOLimeLight implements VisionIO {
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
         if (inputs.hasTarget) {
             // sets input timestamp
-            inputs.timestamp = Logger.getInstance().getRealTimestamp() - latency;
+            inputs.timestamp = Logger.getRealTimestamp() - latency;
 
             inputs.isNewVisionPose = true;
 

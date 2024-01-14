@@ -130,16 +130,15 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
         if(isVisionEnabled) {
-            System.out.println("vision");
-            // AprilTag logic to possibly update pose estimator per camera
+            // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
             for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
                 //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
                 m_poseEstimator.addVisionMeasurement(
                         vision.getVisionOdometry().get(i).getPose(),
                         vision.getVisionOdometry().get(i).getTimestamp(),
                         VecBuilder.fill(
-                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
-                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
+                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
+                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
                                 5.0));
             }
         }

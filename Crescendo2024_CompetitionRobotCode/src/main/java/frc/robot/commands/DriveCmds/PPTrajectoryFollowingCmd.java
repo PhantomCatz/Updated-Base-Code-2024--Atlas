@@ -22,14 +22,13 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
-
     private PathPlannerTrajectory.State previousState;
-    
-    private final Timer timer = new Timer();
     private final PPHolonomicDriveController controller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
-
     private PathPlannerTrajectory trajectory;
+    
+    private final Timer timer = new Timer();
+    private final double TIMEOUT_RATIO = 25;
 
     /**
      * The auto balance on charge station command constructor.
@@ -116,6 +115,7 @@ public class PPTrajectoryFollowingCmd extends Command {
                (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
-                timer.hasElapsed(trajectory.getTotalTimeSeconds());
+                timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
     }
+
 }

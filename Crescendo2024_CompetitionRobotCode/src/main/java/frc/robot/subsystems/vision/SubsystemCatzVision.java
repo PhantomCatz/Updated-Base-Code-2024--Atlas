@@ -16,8 +16,8 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     private static SubsystemCatzVision instance = null;
 
-    private final VisionIO[] cameras;
-    private final VisionIOInputsAutoLogged[] inputs;
+    private final VisionIO cameras;
+    private final VisionIOInputsAutoLogged inputs;
 
     private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
@@ -25,9 +25,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     private boolean useSingleTag = false;
 
     //constructor for vision subsystem that creates new vision input objects for each camera set in the singleton implementation
-    private SubsystemCatzVision(VisionIO[] cameras) {
+    private SubsystemCatzVision(VisionIO cameras) {
         this.cameras = cameras;
-        inputs = new VisionIOInputsAutoLogged[cameras.length];
+        inputs = new VisionIOInputsAutoLogged();
     }
 
     @Override
@@ -37,43 +37,82 @@ public class SubsystemCatzVision extends SubsystemBase {
         // clear results from last periodic
         results.clear();
         
-        //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length; i++) {
-            // update and process new inputs for camera
-            cameras[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
+        // //for every limlight camera process vision with according logic
+        // for (int i = 0; i < inputs.length; i++) {
+        //     // update and process new inputs for camera
+        //     cameras[i].updateInputs(inputs[i]);
+        //     Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
+            
+        // System.out.println("inputs processed");
+        
+        //     //checks for when to process vision
+        //     if (inputs[i].hasTarget && 
+        //         inputs[i].isNewVisionPose && 
+        //         !DriverStation.isAutonomous() && 
+        //         inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+        //         if (useSingleTag) {
+        //             if (inputs[i].singleIDUsed == acceptableTagID) {
+        //                 processVision(i);
+        //             }
+        //         } 
+        //         else {
+        //             processVision(i);
+        //         }
+        //         System.out.println("vision processeed");
+        //     }
+        // }
 
+        // //Logging
+        // Logger.recordOutput("Vision/ResultCount", results.size());
+        //for every limlight camera process vision with according logic
+            // update and process new inputs for camera
+            cameras.updateInputs(inputs);
+            Logger.processInputs("Vision/" + cameras.getName() + "/Inputs", inputs);
+                    
             //checks for when to process vision
-            if (inputs[i].hasTarget && 
-                inputs[i].isNewVisionPose && 
+            if (inputs.hasTarget && 
+                inputs.isNewVisionPose && 
                 !DriverStation.isAutonomous() && 
-                inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+                inputs.maxDistance < VisionConstants.LOWEST_DISTANCE) {
                 if (useSingleTag) {
-                    if (inputs[i].singleIDUsed == acceptableTagID) {
-                        processVision(i);
+                    if (inputs.singleIDUsed == acceptableTagID) {
+                        processVision();
                     }
                 } 
                 else {
-                    processVision(i);
+                    processVision();
                 }
             }
-        }
+        
 
         //Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
     }
 
-    public void processVision(int cameraNum) {
+    // public void processVision(int cameraNum) {
+    //     // create a new pose based off the new inputs
+    //     Pose2d currentPose = new Pose2d(inputs[cameraNum].x, 
+    //                                     inputs[cameraNum].y, 
+    //                                     new Rotation2d(inputs[cameraNum].rotation));
+
+    //     //log data
+    //     Logger.recordOutput(cameras[cameraNum].getName() + " pose", currentPose);
+
+    //     // add the new pose to a list
+    //     results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp));
+    // }
+
+    public void processVision() {
         // create a new pose based off the new inputs
-        Pose2d currentPose = new Pose2d(inputs[cameraNum].x, 
-                                        inputs[cameraNum].y, 
-                                        new Rotation2d(inputs[cameraNum].rotation));
+        Pose2d currentPose = new Pose2d(inputs.x, 
+                                        inputs.y, 
+                                        new Rotation2d(inputs.rotation));
 
         //log data
-        Logger.recordOutput(cameras[cameraNum].getName() + " pose", currentPose);
+        Logger.recordOutput(cameras.getName() + " pose", currentPose);
 
         // add the new pose to a list
-        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp));
+        results.add(new PoseAndTimestamp(currentPose, inputs.timestamp));
     }
 
     //Returns the last recorded pose in a list
@@ -110,15 +149,8 @@ public class SubsystemCatzVision extends SubsystemBase {
         this.acceptableTagID = acceptableTagID;
     }
 
-    //for photonvision, tbd can this be depreciated
-    public void setReferencePose(Pose2d pose) {
-        for (VisionIO io : cameras) {
-            io.setReferencePose(pose);
-        }
-    }
-
-    public double getMinDistance(int camera) {
-        return inputs[camera].minDistance;
+    public double getMinDistance() {
+         return inputs.minDistance;
     }
 
     /**
@@ -127,9 +159,12 @@ public class SubsystemCatzVision extends SubsystemBase {
     */
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
-            instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("Limelight Vision", VisionConstants.LIMELIGHT_OFFSET)
-            });
+            instance = new SubsystemCatzVision(
+                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
+                );
+            // instance = new SubsystemCatzVision(new VisionIO[] {
+            //     new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
+            // });
         }
         return instance;
     }

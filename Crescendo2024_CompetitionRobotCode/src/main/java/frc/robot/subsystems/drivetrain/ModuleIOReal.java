@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -72,9 +73,7 @@ public class ModuleIOReal implements ModuleIO {
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
-            if(initializationStatus.isOK())
-                break;
-            else if(!initializationStatus.isOK())
+            if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
             
         }
@@ -89,7 +88,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
+        DRIVE_MOTOR.setControl(new VelocityVoltage(velocity * DriveConstants.VEL_FF));
     }
 
     @Override

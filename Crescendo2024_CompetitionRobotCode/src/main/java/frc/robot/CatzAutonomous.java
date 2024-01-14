@@ -35,7 +35,7 @@ public class CatzAutonomous {
 
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private static PathPlannerPath driveStraighFullTurn = PathPlannerPath.fromPathFile("DriveStraightFullTurn");
-    private static PathPlannerPath feildSideDriveBack = PathPlannerPath.fromPathFile("FeildSideDriveBack");
+    private static PathPlannerPath test = PathPlannerPath.fromPathFile("Test");
 
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<AutoModes> autoChooser = new LoggedDashboardChooser<>("Auto Routine");
@@ -43,7 +43,7 @@ public class CatzAutonomous {
     private enum AutoModes {
         TEST,
         DRIVE_STRAIGHT,
-        TRANSLATE_DRIVE_STRAIGHT,
+        TRANSLATE_DRIVE_STRAIGHT
     }
 
     public CatzAutonomous() {
@@ -62,7 +62,7 @@ public class CatzAutonomous {
         m_driveTrain.resetForAutonomous();
 
         switch(autoChooser.get()) {
-            case TEST: return testPath2();
+            case TEST: return testPath();
             case DRIVE_STRAIGHT: return driveStraight();
             default: 
             return new InstantCommand();
@@ -71,15 +71,11 @@ public class CatzAutonomous {
 
     //---------------------------------------------------------Autonmous Autos---------------------------------------------------------
     public Command testPath() {
-        return new SequentialCommandGroup();
-    }
-
-    public Command testPath2() {
-        return new SequentialCommandGroup();
+        return new PPTrajectoryFollowingCmd(test);
     }
 
     public Command driveStraight() {
-    return new PPTrajectoryFollowingCmd(driveStraighFullTurn);
+        return new PPTrajectoryFollowingCmd(driveStraighFullTurn);
     }
     
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
