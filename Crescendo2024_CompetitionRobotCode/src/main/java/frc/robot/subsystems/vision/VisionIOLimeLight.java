@@ -60,7 +60,8 @@ public class VisionIOLimeLight implements VisionIO {
                 new Rotation3d(
                         Math.toRadians(data[3]),   //apriltag roll component
                         Math.toRadians(data[4]),   //apriltag pitch componenet
-                        Math.toRadians(data[5]))); //apriltag yaw component
+                        Math.toRadians(data[5])))  //apriltag yaw component
+                                        .transformBy(cameraOffset); 
 
         // set if the Limelight has a target to loggable boolean
         if (NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0) == 1) {

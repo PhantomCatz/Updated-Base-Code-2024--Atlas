@@ -60,17 +60,17 @@ public class CatzAutonomous {
     }
 
     //Automatic pathfinding command
-    // public Command autoFindPathOne() {
-    //             // Create the constraints to use while pathfinding
-    //     PathConstraints constraints = new PathConstraints(
-    //         3.0, 4.0, 
-    //         Units.degreesToRadians(540), Units.degreesToRadians(720));
+    public Command autoFindPathOne() {
+                // Create the constraints to use while pathfinding
+            PathConstraints constraints = new PathConstraints(
+            3.0, 4.0, 
+            Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-    //     // See the "Follow a single path" example for more info on what gets passed here
-    //     return AutoBuilder.pathfindThenFollowPath(
-    //             driveStraighFullTurn,
-    //             constraints,
-    //             3.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
-    //     );
-    // }
+        // See the "Follow a single path" example for more info on what gets passed here
+        return AutoBuilder.pathfindThenFollowPath(
+                PathPlannerPath.fromPathFile("driveStraightFullTurn"),
+                constraints,
+                3.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+        );
+    }
 }
