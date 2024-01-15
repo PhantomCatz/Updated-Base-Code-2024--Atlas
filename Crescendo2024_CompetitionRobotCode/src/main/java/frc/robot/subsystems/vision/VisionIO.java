@@ -24,6 +24,8 @@ public interface VisionIO {
 
         public double translationToTargetX;
         public double translationToTargetY;
+
+        public boolean isLimelightCommunicatingWithNetworkTables;
     }
 
     public default void updateInputs(VisionIOInputs inputs) {}
