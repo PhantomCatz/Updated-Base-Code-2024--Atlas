@@ -109,7 +109,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                                         new Rotation2d(inputs.rotation));
 
         //log data
-        Logger.recordOutput(cameras.getName() + " pose", currentPose);
+        Logger.recordOutput("Obometry/"+cameras.getName() + " pose", currentPose);
 
         // add the new pose to a list
         results.add(new PoseAndTimestamp(currentPose, inputs.timestamp));

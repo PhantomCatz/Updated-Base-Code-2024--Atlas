@@ -26,6 +26,7 @@ public class VisionIOLimeLight implements VisionIO {
         this.name = name;
         this.cameraOffset = limelightOffset;
         System.out.println(name);
+        System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
     }
 
     @Override
