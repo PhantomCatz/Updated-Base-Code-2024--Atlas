@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -48,13 +49,13 @@ public final class CatzConstants {
   public static final int kDriverRotAxis = 4;
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
-  public static final double kDeadband = 0.1;
+  public static final double kDeadband = 0.15;
   }
 
   public static final class VisionConstants {
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
     
-    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, new Rotation3d()); //tbd need to understand how these classese work transform3d vs translation3d
   }
 
   public static final class TrajectoryConstants {
@@ -62,7 +63,7 @@ public final class CatzConstants {
     public static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(2);
   }
 
-  //--------------------------------------Drivetrain-------------------------------
+  //--------------------------------------Drivetrain-\------------------------------
   public static final class DriveConstants {
 
     public static final double LT_FRNT_OFFSET = 0.5112305378; //this one changed
@@ -115,7 +116,7 @@ public final class CatzConstants {
     
     public static final double MAX_SPEED = 3.0; // meters per second
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 6.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = MAX_SPEED + MAX_ANGSPEED_RAD_PER_SEC * MODULE_DISTANCE_FROM_CENTER;
+    public static final double MAX_SPEED_DESATURATION = 4.75;
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction

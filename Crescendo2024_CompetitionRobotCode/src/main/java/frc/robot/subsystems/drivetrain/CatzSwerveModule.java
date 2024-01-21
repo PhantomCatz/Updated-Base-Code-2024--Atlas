@@ -26,7 +26,7 @@ public class CatzSwerveModule {
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
                 
 
-    private final double kP = 0.15; //cuz error is in tenths place so no need to mutiply kp value
+    private final double kP = 0.15; //.15 cuz error is in tenths place so no need to mutiply kp value
     private final double kI = 0.0;
     private final double kD = 0.0015;
 
