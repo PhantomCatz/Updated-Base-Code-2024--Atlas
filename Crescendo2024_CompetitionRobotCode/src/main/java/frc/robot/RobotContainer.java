@@ -64,7 +64,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
  
-    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    // xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
     // xboxDrv.start().onTrue(driveTrain.flipGyro());
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
@@ -72,6 +72,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //shooter activation
     xboxDrv.x().onTrue(shooter.setShooterActive())
                .onFalse(shooter.setShooterDisabled());
+
+    xboxDrv.rightTrigger().onTrue(shooter.setFeederActive())
+                          .onFalse(shooter.setFeederDisabled());
+    xboxDrv.leftTrigger().onTrue(shooter.setFeederReverse())
+                          .onFalse(shooter.setFeederDisabled());
  
    }
 

@@ -91,4 +91,9 @@ public class LoggedTunableNumber {
 
     return false;
   }
+
+public Object getVelocity() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getVelocity'");
+}
 }

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 
-
 public class SubsystemCatzShooter extends SubsystemBase {
   
   private final ShooterIO io;
@@ -40,10 +39,22 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.processInputs("Shooter/shooterinputs ", inputs);
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("velocityBtmLT", inputs.velocityBtmLT);
+    //Logger.recordOutput("velocityBtmLT", inputs.velocityBtmLT);
+    Logger.recordOutput("velocityBtmRT", inputs.velocityBtmRT);
+    //Logger.recordOutput("velocityTopLT", inputs.velocityTopLT);
+    Logger.recordOutput("velocityTopRT", inputs.velocityTopRT);
+
+    Logger.recordOutput("FeederPercentOUtput", inputs.feederMotorPercentOutput);
+    Logger.recordOutput("FeederVelocity", inputs.feederMotorVelocity);
+    Logger.recordOutput("Feeder2PercentOutput", inputs.feederMotor2PercentOutput);
+    Logger.recordOutput("Feeder2Velocity", inputs.feederMotor2Velocity);
+    //SmartDashboard.putNumber("velocityBtmLT", inputs.velocityBtmLT);
     SmartDashboard.putNumber("velocityBtmRT", inputs.velocityBtmRT);
     SmartDashboard.putNumber("velocityTopRT", inputs.velocityTopRT);
-    SmartDashboard.putNumber("velocityTopLT", inputs.velocityTopLT);
+    SmartDashboard.putNumber("feederMotro2Velcocity", inputs.feederMotor2Velocity);
+    SmartDashboard.putNumber("feederMotroVelcocity", inputs.feederMotorVelocity);
+    SmartDashboard.putNumber("FeederMotor%output", inputs.feederMotorPercentOutput);
+    SmartDashboard.putNumber("FeederMotor2%output", inputs.feederMotor2PercentOutput);
   }
 
   public Command setShooterActive() {
@@ -53,7 +64,17 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public Command setShooterDisabled() {
     return run(()->io.setShooterDisabled());
   }
+  public Command setFeederActive() {
+    return run(()->io.shootFeederWithVelocity());
+  }
 
+  public Command setFeederReverse() {
+    return run(()->io.shootFeederReverse());
+  }
+
+  public Command setFeederDisabled() {
+    return run(()->io.setFeederDisabled());
+  }
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;
